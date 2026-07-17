@@ -87,3 +87,6 @@ During the automated execution phase, the AI pair-programmer performed the follo
 
 9. **Documentation**:
    - Created `README.md` with full technical description, setup guide, testing reports, and AI Usage reflection.
+
+10. **Startup Automation**:
+    - Created `run.bat` at the project root to launch both the Express backend and Vite frontend development servers concurrently in separate command prompt windows.
