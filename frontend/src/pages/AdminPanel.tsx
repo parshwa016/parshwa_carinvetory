@@ -3,9 +3,9 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../utils/api';
 import Navbar from '../components/Navbar';
 import VehicleModal from '../components/VehicleModal';
-import { Vehicle } from '../components/VehicleCard';
+import type { Vehicle } from '../components/VehicleCard';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, Plus, Edit2, Trash2, AlertTriangle, ArrowLeft, RefreshCw, Layers } from 'lucide-react';
+import { Shield, Plus, Edit2, Trash2, AlertTriangle, ArrowLeft, Layers } from 'lucide-react';
 
 export const AdminPanel: React.FC = () => {
   const { user } = useAuth();

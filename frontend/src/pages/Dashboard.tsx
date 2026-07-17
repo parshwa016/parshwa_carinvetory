@@ -3,10 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../utils/api';
 import Navbar from '../components/Navbar';
 import SearchBar from '../components/SearchBar';
-import VehicleCard, { Vehicle } from '../components/VehicleCard';
+import VehicleCard from '../components/VehicleCard';
+import type { Vehicle } from '../components/VehicleCard';
 import VehicleModal from '../components/VehicleModal';
 import { filterAndSortVehicles } from '../utils/filters';
-import { Car, Plus, Compass, AlertCircle, TrendingUp, Info } from 'lucide-react';
+import { Car, Plus, Compass, AlertCircle, TrendingUp } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
   const { user } = useAuth();

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { filterAndSortVehicles } from '../utils/filters';
-import { Vehicle } from '../components/VehicleCard';
+import type { Vehicle } from '../components/VehicleCard';
 
 describe('filterAndSortVehicles Utility', () => {
   const mockVehicles: Vehicle[] = [

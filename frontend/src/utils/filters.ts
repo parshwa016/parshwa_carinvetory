@@ -1,4 +1,4 @@
-import { Vehicle } from '../components/VehicleCard';
+import type { Vehicle } from '../components/VehicleCard';
 
 interface SearchFilters {
   query: string;
