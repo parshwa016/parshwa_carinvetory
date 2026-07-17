@@ -30,6 +30,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
   const [purchasing, setPurchasing] = useState(false);
   const [restocking, setRestocking] = useState(false);
   const [restockQty, setRestockQty] = useState('');
+  const [imageError, setImageError] = useState(false);
 
   const handlePurchase = async () => {
     setPurchasing(true);
@@ -89,35 +90,48 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
   const theme = getTheme(vehicle.category);
   const isOutOfStock = vehicle.quantity === 0;
 
+  const carImageName = `${vehicle.make.toLowerCase().replace(/\s+/g, '_')}_${vehicle.model.toLowerCase().replace(/\s+/g, '_')}.jpg`;
+  const carImageUrl = `/cars/${carImageName}`;
+
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-all duration-300 group">
-      {/* Visual Car Graphic representation with beautiful gradients */}
-      <div className={`h-40 bg-gradient-to-br ${theme.bg} relative flex items-center justify-center p-6 text-white overflow-hidden`}>
-        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        
-        {/* Sleek SVG Car Icon representing drive/speed */}
-        <svg
-          className="w-32 h-16 transform group-hover:scale-105 transition-transform duration-500 ease-out"
-          viewBox="0 0 100 50"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          {/* Wheel Arch & Body */}
-          <path d="M10,35 L20,35 C20,30 30,30 30,35 L70,35 C70,30 80,30 80,35 L90,35 C92,35 94,33 94,31 L90,20 C89,17 86,15 82,15 L65,15 L50,8 L25,8 L15,18 L8,24 C6,25 5,27 5,29 L5,31 C5,33 7,35 10,35 Z" fill="rgba(255,255,255,0.1)"/>
-          {/* Wheels */}
-          <circle cx="25" cy="35" r="5" fill="currentColor"/>
-          <circle cx="25" cy="35" r="2" fill="none" stroke="black" strokeWidth="0.5"/>
-          <circle cx="75" cy="35" r="5" fill="currentColor"/>
-          <circle cx="75" cy="35" r="2" fill="none" stroke="black" strokeWidth="0.5"/>
-          {/* Windows */}
-          <path d="M28,11 L48,11 L58,20 L20,20 Z" fill="rgba(255,255,255,0.25)" stroke="currentColor" strokeWidth="1"/>
-          <path d="M50,11 L64,11 L74,20 L58,20 Z" fill="rgba(255,255,255,0.25)" stroke="currentColor" strokeWidth="1"/>
-        </svg>
+      {/* Visual Car Graphic representation with real photo or gradient fallback */}
+      <div className="h-44 relative flex items-center justify-center text-white overflow-hidden bg-slate-900">
+        {!imageError ? (
+          <img
+            src={carImageUrl}
+            alt={`${vehicle.make} ${vehicle.model}`}
+            onError={() => setImageError(true)}
+            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500 ease-out"
+          />
+        ) : (
+          <div className={`w-full h-full bg-gradient-to-br ${theme.bg} flex items-center justify-center p-6 relative`}>
+            <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            {/* Sleek SVG Car Icon representing drive/speed */}
+            <svg
+              className="w-32 h-16 transform group-hover:scale-105 transition-transform duration-500 ease-out"
+              viewBox="0 0 100 50"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              {/* Wheel Arch & Body */}
+              <path d="M10,35 L20,35 C20,30 30,30 30,35 L70,35 C70,30 80,30 80,35 L90,35 C92,35 94,33 94,31 L90,20 C89,17 86,15 82,15 L65,15 L50,8 L25,8 L15,18 L8,24 C6,25 5,27 5,29 L5,31 C5,33 7,35 10,35 Z" fill="rgba(255,255,255,0.1)"/>
+              {/* Wheels */}
+              <circle cx="25" cy="35" r="5" fill="currentColor"/>
+              <circle cx="25" cy="35" r="2" fill="none" stroke="black" strokeWidth="0.5"/>
+              <circle cx="75" cy="35" r="5" fill="currentColor"/>
+              <circle cx="75" cy="35" r="2" fill="none" stroke="black" strokeWidth="0.5"/>
+              {/* Windows */}
+              <path d="M28,11 L48,11 L58,20 L20,20 Z" fill="rgba(255,255,255,0.25)" stroke="currentColor" strokeWidth="1"/>
+              <path d="M50,11 L64,11 L74,20 L58,20 Z" fill="rgba(255,255,255,0.25)" stroke="currentColor" strokeWidth="1"/>
+            </svg>
+          </div>
+        )}
 
-        <span className={`absolute top-4 left-4 text-xs font-bold px-2.5 py-1 rounded-full border bg-white/95 text-slate-800 border-white/20 shadow-sm uppercase tracking-wider`}>
+        <span className={`absolute top-4 left-4 text-xs font-bold px-2.5 py-1 rounded-full border bg-white/95 text-slate-800 border-white/20 shadow-sm uppercase tracking-wider z-10`}>
           {vehicle.category}
         </span>
       </div>
