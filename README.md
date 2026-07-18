@@ -24,6 +24,16 @@ DriveSelect is a full-stack Car Dealership Inventory System built with clean Typ
 
 ---
 
+## Application Screenshots
+
+### 1. Main Dashboard & Inventory Showcase
+![Main Dashboard UI](./screenshots/dashboard.jpg)
+
+### 2. Registration & Auth Screen (with Standard/Admin selector)
+![Login & Registration UI](./screenshots/login.jpg)
+
+---
+
 ## Local Setup & Run Guide
 
 Follow these steps to run the application locally on your machine.
@@ -106,6 +116,25 @@ npm run test
  Test Files  1 passed (1)
       Tests  6 passed (6)
 ```
+
+---
+
+## TDD Demonstration (Interview Walkthrough)
+
+To make it easy to demonstrate the Test-Driven Development (TDD) cycle during interviews, we have included a simple, self-contained unit test demo inside the backend:
+- **Test Specification**: [demo.test.ts](file:///C:/Users/Dell/.gemini/antigravity/scratch/car-dealership-inventory/backend/src/__tests__/demo.test.ts)
+- **Implementation**: [demo.ts](file:///C:/Users/Dell/.gemini/antigravity/scratch/car-dealership-inventory/backend/src/utils/demo.ts)
+
+### How to Run:
+Navigate to the `/backend` folder and execute the demo test suite:
+```bash
+npx vitest run src/__tests__/demo.test.ts
+```
+
+### The TDD Cycle Example:
+1. **RED (Fail)**: If you temporarily change the return value inside `demo.ts` to `0`, running the test command will fail, printing assertions highlighting the mismatch.
+2. **GREEN (Pass)**: Implementing the correct conditional checks (`role === 'ADMIN' ? price * 0.9 : price`) makes the test run pass successfully (turn green).
+3. **REFACTOR**: You can clean up the code safely (e.g., extracting constants) knowing that running the test again will confirm no behavior was broken.
 
 ---
 
