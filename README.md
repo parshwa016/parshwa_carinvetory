@@ -27,10 +27,10 @@ DriveSelect is a full-stack Car Dealership Inventory System built with clean Typ
 ## Application Screenshots
 
 ### 1. Main Dashboard & Inventory Showcase
-![Main Dashboard UI](./screenshots/dashboard.jpg)
+![Main Dashboard UI](./screenshots/dashboard.png)
 
 ### 2. Registration & Auth Screen (with Standard/Admin selector)
-![Login & Registration UI](./screenshots/login.jpg)
+![Login & Registration UI](./screenshots/login.png)
 
 ---
 
