@@ -46,6 +46,11 @@ export const Dashboard: React.FC = () => {
     try {
       const updated = await api.post(`/vehicles/${id}/purchase`, {});
       setVehicles((prev) => prev.map((v) => (v.id === id ? updated : v)));
+      if (updated.message) {
+        alert(`${updated.message}\n\nOriginal Price: $${updated.price.toLocaleString()}\nFinal Price Paid: $${updated.pricePaid.toLocaleString()}`);
+      } else {
+        alert('Purchase successful!');
+      }
     } catch (err: any) {
       alert(err.message || 'Purchase failed');
     }

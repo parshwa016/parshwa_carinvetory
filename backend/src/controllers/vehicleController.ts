@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../middleware/authMiddleware';
 import prisma from '../db';
+import { calculateDiscount } from '../utils/demo';
 
 export const createVehicle = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -149,6 +150,7 @@ export const deleteVehicle = async (req: AuthenticatedRequest, res: Response) =>
 export const purchaseVehicle = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
+    const userRole = req.user?.role || 'USER';
 
     const vehicle = await prisma.vehicle.findUnique({ where: { id } });
     if (!vehicle) {
@@ -166,7 +168,17 @@ export const purchaseVehicle = async (req: AuthenticatedRequest, res: Response) 
       },
     });
 
-    return res.status(200).json(updatedVehicle);
+    const pricePaid = calculateDiscount(vehicle.price, userRole);
+    const hasDiscount = pricePaid < vehicle.price;
+    const message = hasDiscount
+      ? `Purchased successfully! You received a 10% Admin discount!`
+      : 'Purchased successfully!';
+
+    return res.status(200).json({
+      ...updatedVehicle,
+      pricePaid,
+      message,
+    });
   } catch (error) {
     console.error('Purchase vehicle error:', error);
     return res.status(500).json({ error: 'Internal server error' });
