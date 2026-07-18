@@ -104,6 +104,41 @@ async function main() {
       price: 45000,
       quantity: 5,
     },
+    {
+      make: 'Aston Martin',
+      model: 'Vantage',
+      category: 'Coupe',
+      price: 147000,
+      quantity: 2,
+    },
+    {
+      make: 'Ferrari',
+      model: 'F8 Tributo',
+      category: 'Coupe',
+      price: 280000,
+      quantity: 1,
+    },
+    {
+      make: 'Nissan',
+      model: 'GT-R',
+      category: 'Coupe',
+      price: 113500,
+      quantity: 2,
+    },
+    {
+      make: 'Land Rover',
+      model: 'Defender',
+      category: 'SUV',
+      price: 55000,
+      quantity: 4,
+    },
+    {
+      make: 'Lexus',
+      model: 'LS Sedan',
+      category: 'Sedan',
+      price: 76000,
+      quantity: 3,
+    },
   ];
 
   let addedCount = 0;
