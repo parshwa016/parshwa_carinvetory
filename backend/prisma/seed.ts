@@ -3,14 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  // Check if vehicles already exist to prevent duplicate seeding
-  const count = await prisma.vehicle.count();
-  if (count > 0) {
-    console.log('Database already has vehicles. Skipping seed.');
-    return;
-  }
-
-  console.log('Seeding initial vehicles...');
+  console.log('Checking and seeding vehicles...');
 
   const vehicles = [
     {
@@ -74,17 +67,65 @@ async function main() {
       model: 'MX-5 Miata',
       category: 'Convertible',
       price: 28980,
-      quantity: 0, // Out of stock on start to test out-of-stock styles!
+      quantity: 0,
+    },
+    {
+      make: 'Mercedes-Benz',
+      model: 'G-Class',
+      category: 'SUV',
+      price: 140000,
+      quantity: 3,
+    },
+    {
+      make: 'Lamborghini',
+      model: 'Huracan',
+      category: 'Coupe',
+      price: 260000,
+      quantity: 1,
+    },
+    {
+      make: 'BMW',
+      model: 'i8',
+      category: 'Electric',
+      price: 147000,
+      quantity: 2,
+    },
+    {
+      make: 'Subaru',
+      model: 'WRX STI',
+      category: 'Sedan',
+      price: 38000,
+      quantity: 4,
+    },
+    {
+      make: 'Jeep',
+      model: 'Wrangler',
+      category: 'SUV',
+      price: 45000,
+      quantity: 5,
     },
   ];
 
+  let addedCount = 0;
+
   for (const vehicle of vehicles) {
-    await prisma.vehicle.create({
-      data: vehicle,
+    const existing = await prisma.vehicle.findFirst({
+      where: {
+        make: vehicle.make,
+        model: vehicle.model,
+      },
     });
+
+    if (!existing) {
+      await prisma.vehicle.create({
+        data: vehicle,
+      });
+      console.log(`+ Seeded: ${vehicle.make} ${vehicle.model}`);
+      addedCount++;
+    }
   }
 
-  console.log('Database successfully seeded with 9 vehicles!');
+  console.log(`Database seeding check complete! Added ${addedCount} new vehicles.`);
 }
 
 main()
