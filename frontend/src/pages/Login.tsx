@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../utils/api';
 import { Car, Lock, Mail, ArrowRight, Loader2 } from 'lucide-react';
+import GoogleSignIn from '../components/GoogleSignIn';
 
 export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -103,6 +104,17 @@ export const Login: React.FC = () => {
               )}
             </button>
           </form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+              <div className="w-full border-t border-slate-200"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase font-bold tracking-wider">
+              <span className="bg-white px-2 text-slate-400">Or continue with</span>
+            </div>
+          </div>
+
+          <GoogleSignIn />
 
           {/* Quick login hints for evaluators */}
           <div className="mt-8 pt-6 border-t border-slate-100 bg-slate-50/50 rounded-xl p-4">

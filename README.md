@@ -138,6 +138,35 @@ npx vitest run src/__tests__/demo.test.ts
 
 ---
 
+## Google Sign-In (OAuth Sandbox & Production Setup)
+
+To showcase OAuth integration, we have implemented a **Simulated Google Sign-In Sandbox** on both the Login and Registration screens.
+
+### How to use the Sandbox:
+1. On the Login or Register page, click the **"Continue with Google"** button.
+2. A simulated Google account chooser popup will open.
+3. Select either the **Admin account** (`alex.admin@gmail.com`) or the **Customer account** (`john.buyer@gmail.com`).
+4. The system will make a secure request to the backend `POST /api/auth/google`, auto-register or log in the user, issue a JWT token, and redirect you to the dashboard with the correct permissions.
+
+### Production Guide: Transitioning to Real Google OAuth
+To switch from this sandbox simulation to a real Google Cloud OAuth flow:
+1. **Google Cloud Project**: Go to the [Google Cloud Console](https://console.cloud.google.com/), create a project, configure your OAuth Consent Screen, and generate a **Web Application OAuth Client ID**.
+2. **Frontend Integration**:
+   - Install the official library: `npm install @react-oauth/google` in `/frontend`.
+   - Wrap the React App in the `GoogleOAuthProvider` with your Client ID.
+   - Replace our custom popup button with the `<GoogleLogin>` component to receive the cryptographically signed `idToken` from Google.
+3. **Backend Verification**:
+   - Install Google verification library: `npm install google-auth-library` in `/backend`.
+   - Update `authController.ts` `googleLogin` to verify the received token signature:
+     ```typescript
+     import { OAuth2Client } from 'google-auth-library';
+     const client = new OAuth2Client(GOOGLE_CLIENT_ID);
+     const ticket = await client.verifyIdToken({ idToken, audience: GOOGLE_CLIENT_ID });
+     const payload = ticket.getPayload(); // contains verified email and name
+     ```
+
+---
+
 ## My AI Usage
 
 ### AI Tools Used
