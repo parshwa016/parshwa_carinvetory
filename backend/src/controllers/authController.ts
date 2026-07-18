@@ -78,3 +78,51 @@ export const login = async (req: Request, res: Response) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const googleLogin = async (req: Request, res: Response) => {
+  try {
+    const { email, role } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    // Check if user already exists
+    let user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      // Create user with a random password placeholder
+      const randomPassword = Math.random().toString(36).slice(-8);
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+      user = await prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          role: role || 'USER',
+        },
+      });
+    } else if (role && user.role !== role) {
+      // If user logs in with a specific role, update it (useful for evaluator switches)
+      user = await prisma.user.update({
+        where: { email },
+        data: { role },
+      });
+    }
+
+    // Generate token
+    const token = jwt.sign(
+      { userId: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    const { password: _, ...userWithoutPassword } = user;
+    return res.status(200).json({
+      token,
+      user: userWithoutPassword,
+    });
+  } catch (error) {
+    console.error('Google login error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};

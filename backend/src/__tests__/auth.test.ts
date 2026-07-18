@@ -115,4 +115,74 @@ describe('Auth Endpoints', () => {
       expect(res.status).toBe(401);
     });
   });
+
+  describe('POST /api/auth/google', () => {
+    it('should register and log in a new Google user', async () => {
+      const res = await request(app)
+        .post('/api/auth/google')
+        .send({
+          email: 'google-new@example.com',
+          role: 'USER',
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty('token');
+      expect(res.body).toHaveProperty('user');
+      expect(res.body.user.email).toBe('google-new@example.com');
+      expect(res.body.user.role).toBe('USER');
+    });
+
+    it('should log in an existing user via Google', async () => {
+      // Create user first
+      await request(app)
+        .post('/api/auth/register')
+        .send({
+          email: 'google-existing@example.com',
+          password: 'somepassword',
+          role: 'ADMIN',
+        });
+
+      // Login via Google
+      const res = await request(app)
+        .post('/api/auth/google')
+        .send({
+          email: 'google-existing@example.com',
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty('token');
+      expect(res.body.user.email).toBe('google-existing@example.com');
+      expect(res.body.user.role).toBe('ADMIN'); // Keeps their previous role if not overridden
+    });
+
+    it('should update user role if explicitly passed in google login', async () => {
+      // Create user first
+      await request(app)
+        .post('/api/auth/register')
+        .send({
+          email: 'google-update@example.com',
+          password: 'somepassword',
+          role: 'USER',
+        });
+
+      // Login via Google and escalate to ADMIN
+      const res = await request(app)
+        .post('/api/auth/google')
+        .send({
+          email: 'google-update@example.com',
+          role: 'ADMIN',
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.user.role).toBe('ADMIN');
+    });
+
+    it('should fail with missing email', async () => {
+      const res = await request(app)
+        .post('/api/auth/google')
+        .send({});
+
+      expect(res.status).toBe(400);
+    });
+  });
 });
