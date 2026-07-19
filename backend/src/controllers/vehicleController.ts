@@ -161,6 +161,12 @@ export const purchaseVehicle = async (req: AuthenticatedRequest, res: Response) 
       return res.status(400).json({ error: 'Vehicle is out of stock' });
     }
 
+    const pricePaid = calculateDiscount(vehicle.price, userRole);
+    const hasDiscount = pricePaid < vehicle.price;
+    const message = hasDiscount
+      ? `Purchased successfully! You received a 10% Admin discount!`
+      : 'Purchased successfully!';
+
     const updatedVehicle = await prisma.vehicle.update({
       where: { id },
       data: {
@@ -168,11 +174,15 @@ export const purchaseVehicle = async (req: AuthenticatedRequest, res: Response) 
       },
     });
 
-    const pricePaid = calculateDiscount(vehicle.price, userRole);
-    const hasDiscount = pricePaid < vehicle.price;
-    const message = hasDiscount
-      ? `Purchased successfully! You received a 10% Admin discount!`
-      : 'Purchased successfully!';
+    // Log the transaction in database
+    await prisma.transaction.create({
+      data: {
+        userEmail: req.user?.email || 'unknown',
+        vehicleMake: vehicle.make,
+        vehicleModel: vehicle.model,
+        pricePaid,
+      },
+    });
 
     return res.status(200).json({
       ...updatedVehicle,
@@ -210,6 +220,18 @@ export const restockVehicle = async (req: AuthenticatedRequest, res: Response) =
     return res.status(200).json(updatedVehicle);
   } catch (error) {
     console.error('Restock vehicle error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const listTransactions = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const transactions = await prisma.transaction.findMany({
+      orderBy: { purchasedAt: 'desc' },
+    });
+    return res.status(200).json(transactions);
+  } catch (error) {
+    console.error('List transactions error:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };

@@ -146,4 +146,43 @@ describe('Inventory Endpoints', () => {
       expect(res.status).toBe(400);
     });
   });
+
+  describe('GET /api/vehicles/transactions', () => {
+    beforeEach(async () => {
+      // Clear transaction log before each test
+      await prisma.transaction.deleteMany({});
+    });
+
+    it('should allow Admin to view recent transactions', async () => {
+      // 1. Perform a purchase as user
+      await request(app)
+        .post(`/api/vehicles/${vehicleId}/purchase`)
+        .set('Authorization', `Bearer ${userToken}`);
+
+      // 2. Fetch log as Admin
+      const res = await request(app)
+        .get('/api/vehicles/transactions')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBe(1);
+      expect(res.body[0].userEmail).toBe('user@example.com');
+      expect(res.body[0].vehicleMake).toBe('Honda');
+      expect(res.body[0].vehicleModel).toBe('Civic');
+    });
+
+    it('should block regular user from viewing transaction history', async () => {
+      const res = await request(app)
+        .get('/api/vehicles/transactions')
+        .set('Authorization', `Bearer ${userToken}`);
+
+      expect(res.status).toBe(403);
+    });
+
+    it('should block unauthenticated user from viewing transaction history', async () => {
+      const res = await request(app).get('/api/vehicles/transactions');
+      expect(res.status).toBe(401);
+    });
+  });
 });

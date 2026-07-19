@@ -25,3 +25,12 @@ model Vehicle {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Transaction {
+  id           String   @id @default(uuid())
+  userEmail    String
+  vehicleMake  String
+  vehicleModel String
+  pricePaid    Float
+  purchasedAt  DateTime @default(now())
+}

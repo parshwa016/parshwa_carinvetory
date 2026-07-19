@@ -7,11 +7,22 @@ import type { Vehicle } from '../components/VehicleCard';
 import { Link, useNavigate } from 'react-router-dom';
 import { Shield, Plus, Edit2, Trash2, AlertTriangle, ArrowLeft, Layers } from 'lucide-react';
 
+interface Transaction {
+  id: string;
+  userEmail: string;
+  vehicleMake: string;
+  vehicleModel: string;
+  pricePaid: number;
+  purchasedAt: string;
+}
+
 export const AdminPanel: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [transactionsLoading, setTransactionsLoading] = useState(true);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
@@ -35,8 +46,21 @@ export const AdminPanel: React.FC = () => {
     }
   };
 
+  const fetchTransactions = async () => {
+    try {
+      setTransactionsLoading(true);
+      const data = await api.get('/vehicles/transactions');
+      setTransactions(data);
+    } catch (err: any) {
+      console.error('Failed to fetch transactions', err);
+    } finally {
+      setTransactionsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchVehicles();
+    fetchTransactions();
   }, []);
 
   const handleDelete = async (id: string) => {
@@ -214,6 +238,59 @@ export const AdminPanel: React.FC = () => {
               </table>
             </div>
           )}
+
+          {/* Purchase History Log Section */}
+          <div className="mt-12 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-6 sm:p-8">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="bg-indigo-50 text-indigo-600 p-2.5 rounded-xl border border-indigo-100 shadow-sm">
+                <Layers className="h-6 w-6" />
+              </div>
+              <div>
+                <h2 className="text-xl font-black text-slate-900">Recent Purchase Logs</h2>
+                <p className="text-xs text-slate-500 font-semibold mt-0.5">Audit history of all vehicles purchased by customers.</p>
+              </div>
+            </div>
+
+            {transactionsLoading ? (
+              <div className="flex items-center justify-center h-32 text-slate-400 font-bold">
+                Loading transaction history...
+              </div>
+            ) : transactions.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-center text-slate-400">
+                <p className="font-bold">No transactions found</p>
+                <p className="text-xs mt-1">Purchased items will appear here automatically.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto border border-slate-100 rounded-xl">
+                <table className="min-w-full divide-y divide-slate-100 text-left text-sm">
+                  <thead className="bg-slate-50/70 text-xs font-bold uppercase tracking-wider text-slate-500">
+                    <tr>
+                      <th className="px-6 py-4">Buyer Email</th>
+                      <th className="px-6 py-4">Vehicle Model</th>
+                      <th className="px-6 py-4">Price Paid</th>
+                      <th className="px-6 py-4">Date & Time</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-semibold text-slate-700 bg-white">
+                    {transactions.map((t) => (
+                      <tr key={t.id} className="hover:bg-slate-50/50 transition">
+                        <td className="px-6 py-4 font-bold text-slate-900">{t.userEmail}</td>
+                        <td className="px-6 py-4">
+                          {t.vehicleMake} <span className="font-normal text-slate-500">{t.vehicleModel}</span>
+                        </td>
+                        <td className="px-6 py-4 font-black text-slate-900">
+                          ${t.pricePaid.toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 text-xs text-slate-500">
+                          {new Date(t.purchasedAt).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </main>
 
