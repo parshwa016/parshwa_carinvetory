@@ -140,6 +140,41 @@ async function main() {
       price: 76000,
       quantity: 3,
     },
+    {
+      make: 'Dodge',
+      model: 'Charger Hellcat',
+      category: 'Sedan',
+      price: 75000,
+      quantity: 3,
+    },
+    {
+      make: 'Jaguar',
+      model: 'F-Type',
+      category: 'Convertible',
+      price: 82000,
+      quantity: 2,
+    },
+    {
+      make: 'Porsche',
+      model: 'Taycan',
+      category: 'Electric',
+      price: 95000,
+      quantity: 2,
+    },
+    {
+      make: 'Ford',
+      model: 'Mustang Shelby GT500',
+      category: 'Coupe',
+      price: 80000,
+      quantity: 2,
+    },
+    {
+      make: 'Chevrolet',
+      model: 'Corvette C8',
+      category: 'Coupe',
+      price: 72000,
+      quantity: 3,
+    },
   ];
 
   let addedCount = 0;
