@@ -2,6 +2,11 @@
 
 DriveSelect is a full-stack Car Dealership Inventory System built with clean TypeScript, Express, Prisma ORM with SQLite, React, and Tailwind CSS. The project is designed with a focus on Test-Driven Development (TDD), premium visual aesthetics, and solid developer ergonomics (e.g., zero-config SQLite database setup).
 
+### 🌐 Live Deployment
+- **Live Frontend (Vite + Vercel)**: [https://parshwa-carinvetory.vercel.app](https://parshwa-carinvetory.vercel.app)
+  > [!NOTE]
+  > Since this is a serverless frontend deployment, the backend server must be running locally on your machine at `http://localhost:5000` to handle API requests (databases, registration, logins, transactions). See the [Local Setup Guide](#local-setup--run-guide) below to start the backend.
+
 ---
 
 ## Technical Stack & Architecture
