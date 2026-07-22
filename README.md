@@ -42,6 +42,31 @@ DriveSelect is a full-stack Car Dealership Inventory System built with clean Typ
 
 ---
 
+## API Reference
+
+The backend Express server exposes the following RESTful endpoints under the `/api` prefix:
+
+### 🔐 Authentication (`/api/auth`)
+| Endpoint | Method | Auth | Role | Description | Request Body |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `/api/auth/register` | `POST` | Public | Any | Registers a new user | `{ email, password, role }` |
+| `/api/auth/login` | `POST` | Public | Any | Logs in a user, returning JWT | `{ email, password }` |
+| `/api/auth/google` | `POST` | Public | Any | Simulated OAuth entry point | `{ email, name, role }` |
+
+### 🚗 Vehicle Inventory (`/api/vehicles`)
+| Endpoint | Method | Auth | Role | Description | Request Body / Query Params |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `/api/vehicles` | `GET` | JWT | Any | Retrieve all vehicles | None |
+| `/api/vehicles/search` | `GET` | JWT | Any | Query/filter vehicles | Query: `?q=...&category=...` |
+| `/api/vehicles` | `POST` | JWT | Admin | Create a new vehicle listing | `{ make, model, category, price, quantity }` |
+| `/api/vehicles/:id` | `PUT` | JWT | Admin | Edit an existing vehicle | `{ make, model, category, price, quantity }` |
+| `/api/vehicles/:id` | `DELETE` | JWT | Admin | Delete a vehicle listing | None |
+| `/api/vehicles/:id/purchase` | `POST` | JWT | Any | Purchases 1 unit (10% off for Admin) | None |
+| `/api/vehicles/:id/restock` | `POST` | JWT | Admin | Replenishes stock levels | `{ quantity }` (optional, defaults to 1) |
+| `/api/vehicles/transactions` | `GET` | JWT | Admin | Lists all purchase transactions | None |
+
+---
+
 ## Local Setup & Run Guide
 
 Follow these steps to run the application locally on your machine.

@@ -33,6 +33,12 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
   const [imageError, setImageError] = useState(false);
 
   const handlePurchase = async () => {
+    const currentHour = new Date().getHours();
+    if (currentHour < 7 || currentHour >= 22) {
+      alert("Purchases are only allowed between 7:00 AM and 10:00 PM. Please try again after 7:00 AM.");
+      return;
+    }
+
     setPurchasing(true);
     try {
       await onPurchase(vehicle.id);
@@ -89,6 +95,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
 
   const theme = getTheme(vehicle.category);
   const isOutOfStock = vehicle.quantity === 0;
+
+  const currentHour = new Date().getHours();
+  const isOutOfTimeWindow = currentHour < 7 || currentHour >= 22;
 
   const carImageName = `${vehicle.make.toLowerCase().replace(/\s+/g, '_')}_${vehicle.model.toLowerCase().replace(/\s+/g, '_')}.jpg`;
   const carImageUrl = `/cars/${carImageName}`;
@@ -173,7 +182,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
             className={`w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200 ${
               isOutOfStock
                 ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
-                : 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow active:scale-[0.98]'
+                : isOutOfTimeWindow
+                  ? 'bg-amber-600 hover:bg-amber-700 text-white shadow-sm hover:shadow active:scale-[0.98]'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow active:scale-[0.98]'
             }`}
           >
             {purchasing ? (
@@ -184,7 +195,7 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
             ) : (
               <>
                 <ShoppingCart className="h-4 w-4" />
-                <span>{isOutOfStock ? 'Sold Out' : 'Purchase'}</span>
+                <span>{isOutOfStock ? 'Sold Out' : isOutOfTimeWindow ? 'Purchase (Closed)' : 'Purchase'}</span>
               </>
             )}
           </button>

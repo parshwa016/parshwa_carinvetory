@@ -10,6 +10,7 @@ const request = async (endpoint: string, options: RequestOptions = {}) => {
   
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    'x-timezone': Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata',
   };
   
   if (token) {
