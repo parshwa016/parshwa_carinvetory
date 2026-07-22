@@ -152,6 +152,26 @@ export const purchaseVehicle = async (req: AuthenticatedRequest, res: Response) 
     const { id } = req.params;
     const userRole = req.user?.role || 'USER';
 
+    let clientTimezone = req.headers['x-timezone'] as string || 'Asia/Kolkata';
+    try {
+      Intl.DateTimeFormat(undefined, { timeZone: clientTimezone });
+    } catch (e) {
+      clientTimezone = 'Asia/Kolkata';
+    }
+
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: clientTimezone,
+      hour: 'numeric',
+      hour12: false
+    });
+    const currentHour = parseInt(formatter.format(new Date()), 10);
+
+    if (currentHour < 7 || currentHour >= 22) {
+      return res.status(400).json({
+        error: 'Purchases are only allowed between 7:00 AM and 10:00 PM. Please try again after 7:00 AM.'
+      });
+    }
+
     const vehicle = await prisma.vehicle.findUnique({ where: { id } });
     if (!vehicle) {
       return res.status(404).json({ error: 'Vehicle not found' });

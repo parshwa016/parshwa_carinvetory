@@ -12,3 +12,4 @@ describe('calculateDiscount TDD Demo', () => {
     expect(result).toBe(100);
   });
 });
+

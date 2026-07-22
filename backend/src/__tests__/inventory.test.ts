@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import app from '../app';
 import prisma from '../db';
 import jwt from 'jsonwebtoken';
@@ -13,6 +13,10 @@ describe('Inventory Endpoints', () => {
   let outOfStockVehicleId: string;
 
   beforeEach(async () => {
+    // Force system time to a valid hour (12:00 PM noon) for standard tests
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-07-22T12:00:00'));
+
     // Clear databases
     await prisma.vehicle.deleteMany();
     await prisma.user.deleteMany();
@@ -63,6 +67,7 @@ describe('Inventory Endpoints', () => {
   });
 
   afterAll(async () => {
+    vi.useRealTimers();
     await prisma.$disconnect();
   });
 
@@ -101,6 +106,35 @@ describe('Inventory Endpoints', () => {
     it('should block unauthenticated user from purchasing', async () => {
       const res = await request(app).post(`/api/vehicles/${vehicleId}/purchase`);
       expect(res.status).toBe(401);
+    });
+
+    it('should allow purchase if client timezone is inside operational hours even if server UTC time is outside', async () => {
+      // Mock system time to 4:00 AM UTC
+      vi.setSystemTime(new Date('2026-07-22T04:00:00Z'));
+
+      // In Asia/Kolkata (+5:30), this is 9:30 AM (Operational)
+      const res = await request(app)
+        .post(`/api/vehicles/${vehicleId}/purchase`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .set('x-timezone', 'Asia/Kolkata');
+
+      expect(res.status).toBe(200);
+      expect(res.body.quantity).toBe(1); // 2 - 1 = 1
+    });
+
+    it('should block purchase if client timezone is outside operational hours even if server UTC time is inside', async () => {
+      // Mock system time to 4:00 AM UTC
+      vi.setSystemTime(new Date('2026-07-22T04:00:00Z'));
+
+      // In America/New_York (-4:00 DST), this is 12:00 AM Midnight (Non-Operational)
+      const res = await request(app)
+        .post(`/api/vehicles/${vehicleId}/purchase`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .set('x-timezone', 'America/New_York');
+
+      expect(res.status).toBe(400);
+      expect(res.body).toHaveProperty('error');
+      expect(res.body.error).toContain('allowed between 7:00 AM and 10:00 PM');
     });
   });
 
